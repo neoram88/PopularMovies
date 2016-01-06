@@ -18,6 +18,7 @@ public class DetailsActivity extends AppCompatActivity {
     final String RATING = "vote_average";
     final String RELEASE_DATE = "release_date";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

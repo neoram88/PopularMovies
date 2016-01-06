@@ -53,7 +53,6 @@ public class MainActivityFragment extends Fragment{
         updateMovieData();
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
