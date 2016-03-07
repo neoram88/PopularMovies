@@ -9,14 +9,21 @@
     <string-array name="pref_sort_by">
         <item>Most Popular</item>
         <item>Highest Rated</item>
+        <item>Favourites</item>
     </string-array>
     <string-array name="pref_sort_by_values">
         <item>popularity</item>
-        <item>rating</item>
+        <item>vote_average</item>
+        <item>favourites</item>
     </string-array>
 
     <string name="pref_default_sort_by" translatable="false">popularity</string>
     <string name="title_activity_details">DetailsActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="fav_movies">prefFavMovies</string>
 
 
 </resources>

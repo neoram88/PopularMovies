@@ -38,7 +38,7 @@ public class FetchMovieData extends AsyncTask<String,Void,JSONArray> {
 
             //INSERT API KEY BELOW
 
-            String appid="";
+            String appid=BuildConfig.TMDB_API_KEY;
 
             try {
                 // Construct the URL for the moviedb query
@@ -52,6 +52,7 @@ public class FetchMovieData extends AsyncTask<String,Void,JSONArray> {
                         .build();
 
                 URL url = new URL(builtUri.toString());
+                Log.v(LOG_TAG,"URL: "+builtUri.toString());
                 // Create the request to moviedb, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");

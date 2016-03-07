@@ -33,24 +33,49 @@ public class MainActivityFragment extends Fragment{
     public MainActivityFragment() {
     }
 
+    private boolean mTwoPane=false;
     List<String> posterURLS=new ArrayList<String>();
     List<String> synopsis=new ArrayList<String>();
     List<String> title=new ArrayList<String>();
     List<String> rating=new ArrayList<String>();
     List<String> releaseDate=new ArrayList<String>();
+    List<String> movieIDs=new ArrayList<String>();
     final String POSTER = "poster_path";
     final String SYNOPSIS = "overview";
     final String TITLE = "original_title";
     final String RATING = "vote_average";
     final String RELEASE_DATE = "release_date";
+    final String ID = "id";
     SharedPreferences sharedPref ;
     String sortOrder;
     GridAdapter gridadapter;
+    public String movieId;
 
     @Override
     public void onStart() {
         super.onStart();
-        updateMovieData();
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        sortOrder=sharedPref.getString(getString(R.string.pref_movies_sort_order_key), getString(R.string.pref_default_sort_by));
+        String favMovieIds=sharedPref.getString(getString(R.string.fav_movies), "");
+        Log.v("Sort Order ", sortOrder);
+        if(sortOrder.equals("favourites")){
+            posterURLS.clear();
+            synopsis.clear();
+            title.clear();
+            rating.clear();
+            releaseDate.clear();
+            movieIDs.clear();
+            if(!favMovieIds.isEmpty()) {
+                Log.v("Fav Movie ", favMovieIds);
+                String[] movieIDs = favMovieIds.split(",");
+                for (String id : movieIDs) {
+                    movieId=id;
+                    fetchFavMovies();
+                }
+            }
+        }else {
+            updateMovieData();
+        }
     }
 
     @Override
@@ -59,13 +84,16 @@ public class MainActivityFragment extends Fragment{
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         Log.v(MainActivityFragment.class.getName(), ": Inside Fragment");
         DisplayMetrics displayMetrics=getResources().getDisplayMetrics();
-
-
         int screen_width=displayMetrics.widthPixels;    //width of the device screen
         int screen_height=displayMetrics.heightPixels;   //height of device screen
-
+        int ROW_ITEMS;
+        if(mTwoPane){
+             ROW_ITEMS = 3;
+        }else {
+            ROW_ITEMS = 2;
+        }
         final int view_width=screen_width/ROW_ITEMS;   //width for imageview
-        final int view_height=screen_height/2;   //height for imageview
+        final int view_height=screen_height/ROW_ITEMS;   //height for imageview
 
 
         final GridView grid = (GridView) rootView.findViewById(R.id.gridview);
@@ -81,6 +109,7 @@ public class MainActivityFragment extends Fragment{
                 detailsIntent.putExtra(TITLE,title.get(position));
                 detailsIntent.putExtra(RELEASE_DATE,releaseDate.get(position));
                 detailsIntent.putExtra(SYNOPSIS,synopsis.get(position));
+                detailsIntent.putExtra(ID,movieIDs.get(position));
                 startActivity(detailsIntent);
             }
         });
@@ -97,6 +126,7 @@ public class MainActivityFragment extends Fragment{
                 title.clear();
                 rating.clear();
                 releaseDate.clear();
+                movieIDs.clear();
 
                 for(int i = 0; i < output.length(); i++) {
                     JSONObject movieDetails = output.getJSONObject(i);
@@ -105,6 +135,7 @@ public class MainActivityFragment extends Fragment{
                     title.add(movieDetails.getString(TITLE));
                     rating.add(movieDetails.getString(RATING));
                     releaseDate.add(movieDetails.getString(RELEASE_DATE));
+                    movieIDs.add(movieDetails.getString(ID));
                 }
                 if(gridadapter!=null) {
                     gridadapter.updateList(posterURLS);
@@ -116,7 +147,28 @@ public class MainActivityFragment extends Fragment{
         fetchMovie.execute(sortOrder, "desc");
     }
 
-    private static final int ROW_ITEMS = 2;
+    public void fetchFavMovies(){
+
+        FetchMovieDetails fetchMovieDetails=new FetchMovieDetails(new AsyncResponse() {
+            @Override
+            public void processFinish(JSONArray output) throws JSONException {
+                JSONObject movieDetails=output.getJSONObject(0);
+                Log.v("POSTER PATH",movieDetails.getString(POSTER));
+                posterURLS.add(movieDetails.getString(POSTER));
+                synopsis.add(movieDetails.getString(SYNOPSIS));
+                title.add(movieDetails.getString(TITLE));
+                rating.add(movieDetails.getString(RATING));
+                releaseDate.add(movieDetails.getString(RELEASE_DATE));
+                movieIDs.add(movieDetails.getString(ID));
+                if(gridadapter!=null) {
+                    gridadapter.updateList(posterURLS);
+                }
+            }
+
+        });
+        fetchMovieDetails.execute(movieId);
+    }
+
 
     private static final class GridAdapter extends BaseAdapter {
 

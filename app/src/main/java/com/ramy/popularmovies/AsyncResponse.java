@@ -9,3 +9,5 @@ import org.json.JSONException;
 public interface AsyncResponse {
     void processFinish(JSONArray output) throws JSONException;
 }
+
+

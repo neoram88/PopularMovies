@@ -9,4 +9,10 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
+    <Preference
+        android:key="@string/fav_movies"
+        android:title="Fav Movies"
+        android:selectable="false">
+    </Preference>
+
 </PreferenceScreen>
